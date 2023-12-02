@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ppt데이터분석</title>
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c09bb6b450c80a1a3e9ff4b646735668"></script>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    const container = document.getElementById('map');
+    const options = {
+        center: new kakao.maps.LatLng(36.325, 127.420),
+        level: 10
+    };
+
+    const map = new kakao.maps.Map(container, options);
+    const path = '/data/CCTV_Data.csv';
+    fetch(path)
+        .then(response => response.blob())
+        .then(blob => {
+            const reader = new FileReader();
+            reader.onload = function() {
+                Papa.parse(this.result, {
+                    header: true,
+                    complete: function(results) {
+                        const data = results.data;
+                        for (let i = 0; i < data.length; i++) {
+                            new kakao.maps.Marker({
+                                map: map,
+                                position: new kakao.maps.LatLng(parseFloat(data[i]['위도']), parseFloat(data[i]['경도']))
+                            });
+                        }
+                    }
+                });
+            };
+            reader.readAsText(blob, 'EUC-KR');
+        });
+
+
+
+</script>
+
+</body>
+</html>
